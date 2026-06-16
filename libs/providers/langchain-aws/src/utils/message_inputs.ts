@@ -576,10 +576,11 @@ function convertSystemMessageToConverseMessage(
 
 function convertAIMessageToConverseMessage(msg: AIMessage): Bedrock.Message {
   if (msg.response_metadata?.output_version === "v1") {
-    return {
-      role: "assistant",
-      content: convertFromV1ToChatBedrockConverseMessage(msg),
-    };
+    const content = convertFromV1ToChatBedrockConverseMessage(msg);
+    if (content.length === 0) {
+      return { role: "assistant", content: [{ text: "[blank text]" }] };
+    }
+    return { role: "assistant", content };
   }
 
   const assistantMsg: Bedrock.Message = {
